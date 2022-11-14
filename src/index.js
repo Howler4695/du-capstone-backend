@@ -2,7 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { books, authors, categories } from "../schema.js";
 
-const typeDefs = `#graphql
+export const typeDefs = `#graphql
   type Book {
     id: ID!
     title: String
@@ -25,16 +25,16 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    books: [Book]
-    authors: [Author]
-    categories: [Category]
+    getBooks: [Book]
+    getAuthors: [Author]
+    getCategories: [Category]
     getBooksByIds(bookId: [ID!]): [Book]
     getAuthorById(authorId: ID!): Author
     getCategoryById(categoryId: ID!): Category
   }
 `;
 
-const resolvers = {
+export const resolvers = {
   Book: {
     author: ({ author: authorId }) => {
       return authors.find((author) => author.id === authorId);
@@ -54,9 +54,9 @@ const resolvers = {
     },
   },
   Query: {
-    books: () => books,
-    authors: () => authors,
-    categories: () => categories,
+    getBooks: () => books,
+    getAuthors: () => authors,
+    getCategories: () => categories,
     getBooksByIds: (parent, { bookIds }) => {
       return books.filter((book) => bookIds.includes(book.id));
     },
