@@ -1,6 +1,4 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { books, authors, categories } from "../schema.js";
+import { books, authors, categories } from "../data/schema.js";
 
 export const typeDefs = `#graphql
   type Book {
@@ -9,6 +7,7 @@ export const typeDefs = `#graphql
     author: Author
     coverImage: String
     categories: [Category]
+    description: String
   }
 
   type Author {
@@ -68,14 +67,3 @@ export const resolvers = {
     },
   },
 };
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
-
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
-});
-
-console.log(`🚀  Server ready at: ${url}`);
