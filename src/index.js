@@ -39,17 +39,18 @@ export const resolvers = {
       return authors.find((author) => author.id === authorId);
     },
     categories: ({ categories: categoryIds }) => {
+      console.log(categoryIds);
       return categories.filter((category) => categoryIds.includes(category.id));
     },
   },
   Author: {
-    books: ({ id: bookId }) => {
-      return books.filter((book) => book.id === bookId);
+    books: ({ books: bookIds }) => {
+      return books.filter((book) => bookIds.includes(book.id));
     },
   },
   Category: {
-    books: ({ id: bookId }) => {
-      return books.filter((book) => book.id === bookId);
+    books: ({ books: bookIds }) => {
+      return books.filter((book) => bookIds.includes(book.id));
     },
   },
   Query: {

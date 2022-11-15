@@ -1,6 +1,7 @@
 import getTestServer from "./utils/test-server.js";
 // Will Implement context on apolloserver, change ../data/schema.js => ./data/schema.js
 import { books, authors, categories } from "../data/schema.js";
+import randomIdsGenerator from "./utils/random-ids-generator.js";
 
 describe("index", () => {
   const testServer = getTestServer();
@@ -38,7 +39,9 @@ describe("index", () => {
       expect(testBook.title).toBe(againstBook.title);
       expect(testBook.author.id).toBe(againstBook.author);
       expect(testBook.coverImage).toBe(againstBook.coverImage);
-      expect(testBook.categories).toBeDefined(); // TODO: FIGURE THIS OUT
+      expect(testBook.categories.map((category) => category.id)).toEqual(
+        againstBook.categories
+      );
       expect(testBook.description).toBe(againstBook.description);
     });
   });
@@ -72,7 +75,9 @@ describe("index", () => {
       expect(testAuthor.id).toBe(againstAuthor.id);
       expect(testAuthor.firstName).toBe(againstAuthor.firstName);
       expect(testAuthor.lastName).toBe(againstAuthor.lastName);
-      expect(testAuthor.books).toBeDefined();
+      expect(testAuthor.books.map((book) => book.id)).toEqual(
+        againstAuthor.books
+      );
     });
   });
 
@@ -103,44 +108,82 @@ describe("index", () => {
       expect(getCategories.length).toBe(categories.length);
       expect(testCategory.id).toBe(againstCategory.id);
       expect(testCategory.name).toBe(againstCategory.name);
-      expect(testCategory.books).toBeDefined();
+      expect(testCategory.books.map((book) => book.id)).toEqual(
+        againstCategory.books
+      );
     });
   });
 
   describe("getBooksByIds", () => {
     const query = `
-      query($bookIds: [ID!]) {
+      query GetBooksByIds($bookIds: [ID!]) {
         getBooksByIds(bookIds: $bookIds) {
           title
         }
       }
     `;
 
-    it("should return books with coresponding ids", async () => {
-      const { body: response } = await testServer.executeOperation({ query });
-      const { data, errors } = response;
-      console.log([...books]);
-
-      const maxIds = 5;
-      const minIds = 2;
-      const randomQueryLength = Math.floor(
-        Math.random() * (maxIds - minIds) + minIds
+    it("should return books with corresponding ids", async () => {
+      const queryIds = randomIdsGenerator(
+        2,
+        4,
+        books.map((obj) => obj.id)
       );
-      let queryIds = [];
-      for (let i = 0; i < randomQueryLength; i++) {
-        console.log("yes");
-        const numToPush = Math.floor(
-          Math.random() * (Math.max(books.id) - Math.min(books.id)) +
-            Math.min(books.id)
-        );
-        if (!books.id.includes(numToPush)) {
-          i--;
-          continue;
+
+      const { body: response } = await testServer.executeOperation({
+        query,
+        variables: { bookIds: queryIds },
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.getBooksByIds).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const { getBooksByIds: testBookTitles } = data;
+      const againstTitles = books
+        .filter((book) => queryIds.includes(book.id))
+        .map((book) => book.title);
+
+      expect(testBookTitles.map((book) => book.title)).toEqual(againstTitles);
+    });
+  });
+
+  describe("getAuthorById", () => {
+    const query = `
+      query GetAuthorById($authorId: ID!) {
+        getAuthorById(authorId: $authorId) {
+          id
+          firstName
+          lastName
+          books {
+            id
+          }
         }
-        queryIds.push(numToPush);
       }
-      console.log(queryIds);
-      console.log(Math.floor(Math.random() * (maxIds - minIds) + minIds));
+    `;
+
+    it("should return author with corresponding id", async () => {
+      const randomAuthorsIndex = Math.floor(Math.random() * authors.length);
+      const queryId = authors[randomAuthorsIndex].id;
+
+      const { body: response } = await testServer.executeOperation({
+        query,
+        variables: { authorId: queryId },
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.getAuthorById).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const { getAuthorById: testAuthor } = data;
+      const againstAuthor = authors[randomAuthorsIndex];
+
+      expect(testAuthor.id).toBe(againstAuthor.id);
+      expect(testAuthor.firstName).toBe(againstAuthor.firstName);
+      expect(testAuthor.lastName).toBe(againstAuthor.lastName);
+      expect(testAuthor.books.map((book) => book.id)).toEqual(
+        againstAuthor.books
+      );
     });
   });
 });
