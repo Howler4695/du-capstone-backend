@@ -186,4 +186,41 @@ describe("index", () => {
       );
     });
   });
+
+  describe("getCategoryById", () => {
+    const query = `
+      query GetCategoryById($categoryId: ID!) {
+        getCategoryById(categoryId: $categoryId) {
+          id
+          name
+          books {
+            id
+          }
+        }
+      }
+    `;
+
+    it("should return books with corresponding ids", async () => {
+      const randomCategoryIndex = Math.floor(Math.random() * categories.length);
+      const queryId = categories[randomCategoryIndex].id;
+
+      const { body: response } = await testServer.executeOperation({
+        query,
+        variables: { categoryId: queryId },
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.getCategoryById).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const { getCategoryById: testCategory } = data;
+      const againstCategory = categories[randomCategoryIndex];
+
+      expect(testCategory.id).toBe(testCategory.id);
+      expect(testCategory.name).toBe(againstCategory.name);
+      expect(testCategory.books.map((book) => book.id)).toEqual(
+        againstCategory.books
+      );
+    });
+  });
 });
