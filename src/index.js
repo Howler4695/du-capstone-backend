@@ -27,7 +27,7 @@ export const typeDefs = `#graphql
     getBooks: [Book]
     getAuthors: [Author]
     getCategories: [Category]
-    getBooksByIds(bookId: [ID!]): [Book]
+    getBooksByIds(bookIds: [ID!]): [Book]
     getAuthorById(authorId: ID!): Author
     getCategoryById(categoryId: ID!): Category
   }

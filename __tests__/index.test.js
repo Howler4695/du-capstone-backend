@@ -30,11 +30,10 @@ describe("index", () => {
       expect(data.getBooks).toBeDefined();
 
       const { getBooks } = data;
-      const { length } = getBooks;
       const testBook = getBooks[0];
       const againstBook = books[0];
 
-      expect(length).toBe(books.length);
+      expect(getBooks.length).toBe(books.length);
       expect(testBook.id).toBe(againstBook.id);
       expect(testBook.title).toBe(againstBook.title);
       expect(testBook.author.id).toBe(againstBook.author);
@@ -45,7 +44,7 @@ describe("index", () => {
   });
 
   describe("getAuthors", () => {
-    query = `
+    const query = `
       query {
         getAuthors {
           id
@@ -60,18 +59,88 @@ describe("index", () => {
 
     it("should return all authors", async () => {
       const { body: response } = await testServer.executeOperation({ query });
-      const { data, errors } = response;
+      const { data, errors } = response.singleResult;
 
       expect(errors).toBeUndefined();
-      expect(data).toBeDefined();
+      expect(data.getAuthors).toBeDefined();
 
       const { getAuthors } = data;
-      const { length } = getAuthors;
       const testAuthor = getAuthors[0];
       const againstAuthor = authors[0];
 
-      expect(length).ToBe(authors.length);
-      expect(testAuthor.id).ToBe(authors.id);
+      expect(getAuthors.length).toBe(authors.length);
+      expect(testAuthor.id).toBe(againstAuthor.id);
+      expect(testAuthor.firstName).toBe(againstAuthor.firstName);
+      expect(testAuthor.lastName).toBe(againstAuthor.lastName);
+      expect(testAuthor.books).toBeDefined();
+    });
+  });
+
+  describe("getCategories", () => {
+    const query = `
+      query {
+        getCategories {
+          id
+          name
+          books {
+            id
+          }
+        }
+      }
+    `;
+
+    it("should return all categories", async () => {
+      const { body: response } = await testServer.executeOperation({ query });
+      const { data, errors } = response.singleResult;
+
+      expect(errors).toBeUndefined();
+      expect(data.getCategories).toBeDefined();
+
+      const { getCategories } = data;
+      const testCategory = getCategories[0];
+      const againstCategory = categories[0];
+
+      expect(getCategories.length).toBe(categories.length);
+      expect(testCategory.id).toBe(againstCategory.id);
+      expect(testCategory.name).toBe(againstCategory.name);
+      expect(testCategory.books).toBeDefined();
+    });
+  });
+
+  describe("getBooksByIds", () => {
+    const query = `
+      query($bookIds: [ID!]) {
+        getBooksByIds(bookIds: $bookIds) {
+          title
+        }
+      }
+    `;
+
+    it("should return books with coresponding ids", async () => {
+      const { body: response } = await testServer.executeOperation({ query });
+      const { data, errors } = response;
+      console.log([...books]);
+
+      const maxIds = 5;
+      const minIds = 2;
+      const randomQueryLength = Math.floor(
+        Math.random() * (maxIds - minIds) + minIds
+      );
+      let queryIds = [];
+      for (let i = 0; i < randomQueryLength; i++) {
+        console.log("yes");
+        const numToPush = Math.floor(
+          Math.random() * (Math.max(books.id) - Math.min(books.id)) +
+            Math.min(books.id)
+        );
+        if (!books.id.includes(numToPush)) {
+          i--;
+          continue;
+        }
+        queryIds.push(numToPush);
+      }
+      console.log(queryIds);
+      console.log(Math.floor(Math.random() * (maxIds - minIds) + minIds));
     });
   });
 });
