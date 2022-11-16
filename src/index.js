@@ -36,7 +36,7 @@ export const typeDefs = `#graphql
 export const resolvers = {
   Book: {
     author: ({ author: authorId }) =>
-      authors.find(author => author.id === authorId),
+      authors.find(author => authorId === author.id),
     categories: ({ categories: categoryIds }) =>
       categories.filter(category => categoryIds.includes(category.id))
   },
