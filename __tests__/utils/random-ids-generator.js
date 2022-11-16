@@ -8,11 +8,12 @@ const randomIdsGenerator = (minIds, maxIds, idArray) => {
   const randomQueryLength = Math.floor(
     Math.random() * (maxIds - minIds) + minIds
   );
-  let queryIds = [];
+  const queryIds = [];
   for (let i = 0; i < randomQueryLength; i++) {
     const idIndexToPush = Math.floor(Math.random() * idArray.length);
     queryIds.push(idArray[idIndexToPush]);
   }
+
   return queryIds;
 };
 

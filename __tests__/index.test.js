@@ -1,11 +1,11 @@
-import getTestServer from "./utils/test-server.js";
 // Will Implement context on apolloserver, change ../data/schema.js => ./data/schema.js
-import { books, authors, categories } from "../data/schema.js";
-import randomIdsGenerator from "./utils/random-ids-generator.js";
+import { books, authors, categories } from '../data/schema.js';
+import getTestServer from './utils/test-server.js';
+import randomIdsGenerator from './utils/random-ids-generator.js';
 
-describe("index", () => {
+describe('index', () => {
   const testServer = getTestServer();
-  describe("getBooks", () => {
+  describe('getBooks', () => {
     const query = `
       query {
         getBooks {
@@ -23,7 +23,7 @@ describe("index", () => {
       }
     `;
 
-    it("should return all books", async () => {
+    it('should return all books', async () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
@@ -39,14 +39,14 @@ describe("index", () => {
       expect(testBook.title).toBe(againstBook.title);
       expect(testBook.author.id).toBe(againstBook.author);
       expect(testBook.coverImage).toBe(againstBook.coverImage);
-      expect(testBook.categories.map((category) => category.id)).toEqual(
+      expect(testBook.categories.map(category => category.id)).toEqual(
         againstBook.categories
       );
       expect(testBook.description).toBe(againstBook.description);
     });
   });
 
-  describe("getAuthors", () => {
+  describe('getAuthors', () => {
     const query = `
       query {
         getAuthors {
@@ -60,7 +60,7 @@ describe("index", () => {
       }
     `;
 
-    it("should return all authors", async () => {
+    it('should return all authors', async () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
@@ -75,13 +75,13 @@ describe("index", () => {
       expect(testAuthor.id).toBe(againstAuthor.id);
       expect(testAuthor.firstName).toBe(againstAuthor.firstName);
       expect(testAuthor.lastName).toBe(againstAuthor.lastName);
-      expect(testAuthor.books.map((book) => book.id)).toEqual(
+      expect(testAuthor.books.map(book => book.id)).toEqual(
         againstAuthor.books
       );
     });
   });
 
-  describe("getCategories", () => {
+  describe('getCategories', () => {
     const query = `
       query {
         getCategories {
@@ -94,7 +94,7 @@ describe("index", () => {
       }
     `;
 
-    it("should return all categories", async () => {
+    it('should return all categories', async () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
@@ -108,13 +108,13 @@ describe("index", () => {
       expect(getCategories.length).toBe(categories.length);
       expect(testCategory.id).toBe(againstCategory.id);
       expect(testCategory.name).toBe(againstCategory.name);
-      expect(testCategory.books.map((book) => book.id)).toEqual(
+      expect(testCategory.books.map(book => book.id)).toEqual(
         againstCategory.books
       );
     });
   });
 
-  describe("getBooksByIds", () => {
+  describe('getBooksByIds', () => {
     const query = `
       query GetBooksByIds($bookIds: [ID!]) {
         getBooksByIds(bookIds: $bookIds) {
@@ -123,16 +123,16 @@ describe("index", () => {
       }
     `;
 
-    it("should return books with corresponding ids", async () => {
+    it('should return books with corresponding ids', async () => {
       const queryIds = randomIdsGenerator(
         2,
         4,
-        books.map((obj) => obj.id)
+        books.map(book => book.id)
       );
 
       const { body: response } = await testServer.executeOperation({
         query,
-        variables: { bookIds: queryIds },
+        variables: { bookIds: queryIds }
       });
       const { data, errors } = response.singleResult;
 
@@ -141,14 +141,14 @@ describe("index", () => {
 
       const { getBooksByIds: testBookTitles } = data;
       const againstTitles = books
-        .filter((book) => queryIds.includes(book.id))
-        .map((book) => book.title);
+        .filter(book => queryIds.includes(book.id))
+        .map(book => book.title);
 
-      expect(testBookTitles.map((book) => book.title)).toEqual(againstTitles);
+      expect(testBookTitles.map(book => book.title)).toEqual(againstTitles);
     });
   });
 
-  describe("getAuthorById", () => {
+  describe('getAuthorById', () => {
     const query = `
       query GetAuthorById($authorId: ID!) {
         getAuthorById(authorId: $authorId) {
@@ -162,13 +162,13 @@ describe("index", () => {
       }
     `;
 
-    it("should return author with corresponding id", async () => {
+    it('should return author with corresponding id', async () => {
       const randomAuthorsIndex = Math.floor(Math.random() * authors.length);
       const queryId = authors[randomAuthorsIndex].id;
 
       const { body: response } = await testServer.executeOperation({
         query,
-        variables: { authorId: queryId },
+        variables: { authorId: queryId }
       });
       const { data, errors } = response.singleResult;
 
@@ -181,13 +181,13 @@ describe("index", () => {
       expect(testAuthor.id).toBe(againstAuthor.id);
       expect(testAuthor.firstName).toBe(againstAuthor.firstName);
       expect(testAuthor.lastName).toBe(againstAuthor.lastName);
-      expect(testAuthor.books.map((book) => book.id)).toEqual(
+      expect(testAuthor.books.map(book => book.id)).toEqual(
         againstAuthor.books
       );
     });
   });
 
-  describe("getCategoryById", () => {
+  describe('getCategoryById', () => {
     const query = `
       query GetCategoryById($categoryId: ID!) {
         getCategoryById(categoryId: $categoryId) {
@@ -200,13 +200,13 @@ describe("index", () => {
       }
     `;
 
-    it("should return books with corresponding ids", async () => {
+    it('should return books with corresponding ids', async () => {
       const randomCategoryIndex = Math.floor(Math.random() * categories.length);
       const queryId = categories[randomCategoryIndex].id;
 
       const { body: response } = await testServer.executeOperation({
         query,
-        variables: { categoryId: queryId },
+        variables: { categoryId: queryId }
       });
       const { data, errors } = response.singleResult;
 
@@ -218,7 +218,7 @@ describe("index", () => {
 
       expect(testCategory.id).toBe(testCategory.id);
       expect(testCategory.name).toBe(againstCategory.name);
-      expect(testCategory.books.map((book) => book.id)).toEqual(
+      expect(testCategory.books.map(book => book.id)).toEqual(
         againstCategory.books
       );
     });
