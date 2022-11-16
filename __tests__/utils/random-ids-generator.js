@@ -5,21 +5,13 @@
  */
 const randomIdsGenerator = (minIds, maxIds, idArray) => {
   maxIds += 1;
-  const lowestId = Math.min.apply(Math, idArray);
-  const highestId = Math.max.apply(Math, idArray);
   const randomQueryLength = Math.floor(
     Math.random() * (maxIds - minIds) + minIds
   );
   let queryIds = [];
   for (let i = 0; i < randomQueryLength; i++) {
-    const idToPush = Math.floor(
-      Math.random() * (highestId + 1 - lowestId) + lowestId
-    ).toString();
-    if (!idArray.includes(idToPush)) {
-      i--;
-      continue;
-    }
-    queryIds.push(idToPush);
+    const idIndexToPush = Math.floor(Math.random() * idArray.length);
+    queryIds.push(idArray[idIndexToPush]);
   }
   return queryIds;
 };
