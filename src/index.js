@@ -31,12 +31,16 @@ export const typeDefs = `#graphql
     getAuthorById(authorId: ID!): Author
     getCategoryById(categoryId: ID!): Category
   }
+
+  type Mutation {
+    updateBook(bookId: ID!, mutatedBook: Book!): Book
+  }
 `;
 
 export const resolvers = {
   Book: {
     author: ({ author: authorId }) =>
-      authors.find(author => author.id === authorId),
+      authors.find(author => authorId === author.id),
     categories: ({ categories: categoryIds }) =>
       categories.filter(category => categoryIds.includes(category.id))
   },
@@ -58,5 +62,11 @@ export const resolvers = {
       authors.find(author => authorId === author.id),
     getCategoryById: (parent, { categoryId }) =>
       categories.find(category => categoryId === category.id)
+  },
+  Mutation: {
+    updateBook: (parent, { bookId, mutatedBook }) => {
+      targetBook = books.find(book => bookId === book.id);
+      targetBook = mutatedBook;
+    }
   }
 };
