@@ -25,8 +25,6 @@ describe('index', () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
-      expect(errors).toBeUndefined();
-      expect(data.getBooks).toBeDefined();
       expect(response).toMatchSnapshot();
     });
   });
@@ -49,8 +47,6 @@ describe('index', () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
-      expect(errors).toBeUndefined();
-      expect(data.getAuthors).toBeDefined();
       expect(response).toMatchSnapshot();
     });
   });
@@ -72,8 +68,6 @@ describe('index', () => {
       const { body: response } = await testServer.executeOperation({ query });
       const { data, errors } = response.singleResult;
 
-      expect(errors).toBeUndefined();
-      expect(data.getCategories).toBeDefined();
       expect(response).toMatchSnapshot();
     });
 
