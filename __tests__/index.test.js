@@ -1,8 +1,8 @@
-import { books, authors, categories } from '../data/schema.js';
+import { books } from '../data/schema.js';
 import newTestServer from './utils/test-server.js';
 
 describe('index', () => {
-  let testServer = newTestServer();
+  const testServer = newTestServer();
   describe('getBooks', () => {
     const query = `
       query {
@@ -171,7 +171,6 @@ describe('index', () => {
         expect(books.length).toBe(preAddLength + 1);
 
         const testBook = data.addBook;
-        const againstBook = newBook;
 
         expect(testBook.id).toBe('5');
         expect(testBook.title).toBe('Starship Troopers');
