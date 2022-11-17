@@ -1,4 +1,5 @@
 import { books, authors, categories } from '../data/schema.js';
+import { idIncrement } from '../utils/tools.js';
 
 export const typeDefs = `#graphql
   type Book {
@@ -23,6 +24,23 @@ export const typeDefs = `#graphql
     books: [Book]
   }
 
+  input BookInput {
+    title: String!
+    author: ID!
+    coverImage: String
+    categories: [ID]
+    description: String
+  }
+
+  input AuthorInput {
+    firstName: String
+    lastName: String!
+  }
+
+  input CategoryInput {
+    name: String!
+  }
+
   type Query {
     getBooks: [Book]
     getAuthors: [Author]
@@ -33,7 +51,7 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    addBook(title: String!, author: Author!, coverImage: String, categories: [Category], description String): Book
+    addBook(newBook: BookInput): Book
   }
 `;
 
@@ -60,8 +78,10 @@ export const resolvers = {
       books.filter(book => bookIds.includes(book.id))
   },
   Mutation: {
-    addBook: (_, { title, author, coverImage, categories, description }) => {
-      return null;
+    addBook(_, { newBook }) {
+      newBook.id = idIncrement(books.map(book => book.id));
+      books.push(newBook);
+      return newBook;
     }
   }
 };

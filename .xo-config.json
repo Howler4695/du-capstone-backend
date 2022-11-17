@@ -19,6 +19,13 @@
         "no-undef": "off",
         "max-nested-callbacks": "off"
       }
+    },
+    {
+      "files": "src/server.js",
+      "rules": {
+        "n/file-extension-in-import": "off",
+        "no-promise-executor-return": "off"
+      }
     }
   ]
 }

@@ -1,10 +1,10 @@
 // Will Implement context on apolloserver, change ../data/schema.js => ./data/schema.js
 import { books, authors, categories } from '../data/schema.js';
-import getTestServer from './utils/test-server.js';
+import newTestServer from './utils/test-server.js';
 import randomIdsGenerator from './utils/random-ids-generator.js';
 
 describe('index', () => {
-  const testServer = getTestServer();
+  let testServer = newTestServer();
   describe('getBooks', () => {
     const query = `
       query {
@@ -145,6 +145,66 @@ describe('index', () => {
         .map(book => book.title);
 
       expect(testBookTitles.map(book => book.title)).toEqual(againstTitles);
+    });
+  });
+
+  describe('addBook', () => {
+    const mutation = `
+      mutation AddBook($newBook: BookInput!) {
+        addBook(newBook: $newBook) {
+          id
+          title
+          author {
+            id
+          }
+          coverImage
+          categories {
+            id
+          }
+          description
+        }
+      }
+    `;
+
+    afterEach(async () => {
+      books.pop();
+    });
+    afterAll(async () => {
+      await testServer.stop();
+      testServer = newTestServer();
+    });
+
+    it('should add book to memory and return book', async () => {
+      const preAddLength = books.length;
+      const newBook = {
+        title: 'Starship Troopers',
+        author: '2',
+        coverImage: 'https://incredible-cover-image.jpeg',
+        categories: ['1', '2'],
+        description: "It's starship troopers"
+      };
+
+      const { body: response } = await testServer.executeOperation({
+        query: mutation,
+        variables: { newBook }
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.addBook).toBeDefined();
+      expect(errors).toBeUndefined();
+      expect(books.length).toBe(preAddLength + 1);
+
+      const testBook = data.addBook;
+      const againstBook = newBook;
+
+      expect(testBook.id).toBe(books[books.length - 1].id);
+      expect(testBook.title).toBe(againstBook.title);
+      expect(testBook.author.id).toBe(againstBook.author);
+      expect(testBook.coverImage).toBe(againstBook.coverImage);
+      expect(testBook.categories.map(category => category.id)).toEqual(
+        againstBook.categories
+      );
+      expect(testBook.description).toBe(testBook.description);
     });
   });
 });

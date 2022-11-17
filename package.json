@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "lint": "xo",
+    "lint:fix": "xo --fix",
     "build": "babel --extensions .js,.jsx ./src -d dist",
     "dev": "nodemon --exec babel-node src/server.js",
     "test": "jest",
