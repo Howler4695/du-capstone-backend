@@ -45,8 +45,7 @@ export const typeDefs = `#graphql
     getAuthors: [Author]
     getCategories: [Category]
     getBooksByIds(bookIds: [ID!]): [Book]
-    getAuthorById(authorId: ID!): Author
-    getCategoryById(categoryId: ID!): Category
+    getAuthorBooksById(authorId: ID!): [Book]
   }
 
   type Mutation {
@@ -74,7 +73,9 @@ export const resolvers = {
     getAuthors: () => authors,
     getCategories: () => categories,
     getBooksByIds: (_, { bookIds }) =>
-      books.filter(book => bookIds.includes(book.id))
+      books.filter(book => bookIds.includes(book.id)),
+    getAuthorBooksById: (_, { authorId }) =>
+      books.filter(book => authorId === book.author)
   },
   Mutation: {
     addBook(_, { newBook }) {

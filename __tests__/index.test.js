@@ -23,8 +23,6 @@ describe('index', () => {
 
     it('should return all books', async () => {
       const { body: response } = await testServer.executeOperation({ query });
-      const { data, errors } = response.singleResult;
-
       expect(response).toMatchSnapshot();
     });
   });
@@ -45,8 +43,6 @@ describe('index', () => {
 
     it('should return all authors', async () => {
       const { body: response } = await testServer.executeOperation({ query });
-      const { data, errors } = response.singleResult;
-
       expect(response).toMatchSnapshot();
     });
   });
@@ -66,8 +62,6 @@ describe('index', () => {
 
     it('should return all categories', async () => {
       const { body: response } = await testServer.executeOperation({ query });
-      const { data, errors } = response.singleResult;
-
       expect(response).toMatchSnapshot();
     });
 
