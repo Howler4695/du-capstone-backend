@@ -1,6 +1,5 @@
 import { books, authors, categories } from '../data/schema.js';
 import newTestServer from './utils/test-server.js';
-import randomIdsGenerator from './utils/random-ids-generator.js';
 
 describe('index', () => {
   let testServer = newTestServer();
@@ -31,17 +30,21 @@ describe('index', () => {
 
       const { getBooks } = data;
       const testBook = getBooks[0];
-      const againstBook = books[0];
 
-      expect(getBooks.length).toBe(books.length);
-      expect(testBook.id).toBe(againstBook.id);
-      expect(testBook.title).toBe(againstBook.title);
-      expect(testBook.author.id).toBe(againstBook.author);
-      expect(testBook.coverImage).toBe(againstBook.coverImage);
-      expect(testBook.categories.map(category => category.id)).toEqual(
-        againstBook.categories
+      expect(getBooks.length).toBe(4);
+      expect(testBook.id).toBe('1');
+      expect(testBook.title).toBe('Harry Potter and the Chamber of Secrets');
+      expect(testBook.author.id).toBe('1');
+      expect(testBook.coverImage).toBe(
+        'https://m.media-amazon.com/images/I/51mFoFmu0EL._AC_SY780_.jpg'
       );
-      expect(testBook.description).toBe(againstBook.description);
+      expect(testBook.categories.map(category => category.id)).toEqual([
+        '1',
+        '2'
+      ]);
+      expect(testBook.description).toBe(
+        'Harry Potter and the Chamber of Secrets is a 1998 young adult fantasy novel by J.K. Rowling, the second in the Harry Potter series. The story follows Harry’s tumultuous second year at Hogwarts School of Witchcraft and Wizardry, including an encounter with Voldemort, the wizard who killed Harry’s parents. Against this fantastic backdrop, Rowling examines such themes as death, fame, friendship, choice, and prejudice. Upon release, the novel became a worldwide bestseller and won several awards, including Children’s Book of the Year at the British Book Awards and the Nestlé Smarties Book Award; it was subsequently adapted into a 2002 film directed by Chris Columbus.'
+      );
     });
   });
 
@@ -68,15 +71,12 @@ describe('index', () => {
 
       const { getAuthors } = data;
       const testAuthor = getAuthors[0];
-      const againstAuthor = authors[0];
 
-      expect(getAuthors.length).toBe(authors.length);
-      expect(testAuthor.id).toBe(againstAuthor.id);
-      expect(testAuthor.firstName).toBe(againstAuthor.firstName);
-      expect(testAuthor.lastName).toBe(againstAuthor.lastName);
-      expect(testAuthor.books.map(book => book.id)).toEqual(
-        againstAuthor.books
-      );
+      expect(getAuthors.length).toBe(8);
+      expect(testAuthor.id).toBe('1');
+      expect(testAuthor.firstName).toBe('J.K.');
+      expect(testAuthor.lastName).toBe('Rowling');
+      expect(testAuthor.books.map(book => book.id)).toEqual(['1', '2', '3']);
     });
   });
 
@@ -104,12 +104,10 @@ describe('index', () => {
       const testCategory = getCategories[0];
       const againstCategory = categories[0];
 
-      expect(getCategories.length).toBe(categories.length);
-      expect(testCategory.id).toBe(againstCategory.id);
-      expect(testCategory.name).toBe(againstCategory.name);
-      expect(testCategory.books.map(book => book.id)).toEqual(
-        againstCategory.books
-      );
+      expect(getCategories.length).toBe(3);
+      expect(testCategory.id).toBe('1');
+      expect(testCategory.name).toBe('Fantasy');
+      expect(testCategory.books.map(book => book.id)).toEqual(['1', '2', '3']);
     });
   });
 
@@ -123,11 +121,7 @@ describe('index', () => {
     `;
 
     it('should return books with corresponding ids', async () => {
-      const queryIds = randomIdsGenerator(
-        2,
-        4,
-        books.map(book => book.id)
-      );
+      const queryIds = ['1', '2', '4'];
 
       const { body: response } = await testServer.executeOperation({
         query,
@@ -139,11 +133,32 @@ describe('index', () => {
       expect(errors).toBeUndefined();
 
       const { getBooksByIds: testBookTitles } = data;
-      const againstTitles = books
-        .filter(book => queryIds.includes(book.id))
-        .map(book => book.title);
 
-      expect(testBookTitles.map(book => book.title)).toEqual(againstTitles);
+      expect(testBookTitles.map(book => book.title)).toEqual([
+        'Harry Potter and the Chamber of Secrets',
+        'Harry Potter and the Prisoner of Azkaban',
+        'C All in One Desk Reference For Dummies'
+      ]);
+    });
+
+    it('should return books with corresponding ids, and no duplicates', async () => {
+      const queryIds = ['1', '2', '2'];
+
+      const { body: response } = await testServer.executeOperation({
+        query,
+        variables: { bookIds: queryIds }
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.getBooksByIds).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const { getBooksByIds: testBookTitles } = data;
+
+      expect(testBookTitles.map(book => book.title)).toEqual([
+        'Harry Potter and the Chamber of Secrets',
+        'Harry Potter and the Prisoner of Azkaban'
+      ]);
     });
   });
 
@@ -165,12 +180,8 @@ describe('index', () => {
       }
     `;
 
-    afterEach(async () => {
+    afterEach(() => {
       books.pop();
-    });
-    afterAll(async () => {
-      await testServer.stop();
-      testServer = newTestServer();
     });
 
     it('should add book to memory and return book', async () => {
@@ -196,14 +207,15 @@ describe('index', () => {
       const testBook = data.addBook;
       const againstBook = newBook;
 
-      expect(testBook.id).toBe(books[books.length - 1].id);
-      expect(testBook.title).toBe(againstBook.title);
-      expect(testBook.author.id).toBe(againstBook.author);
-      expect(testBook.coverImage).toBe(againstBook.coverImage);
-      expect(testBook.categories.map(category => category.id)).toEqual(
-        againstBook.categories
-      );
-      expect(testBook.description).toBe(testBook.description);
+      expect(testBook.id).toBe('5');
+      expect(testBook.title).toBe('Starship Troopers');
+      expect(testBook.author.id).toBe('2');
+      expect(testBook.coverImage).toBe('https://incredible-cover-image.jpeg');
+      expect(testBook.categories.map(category => category.id)).toEqual([
+        '1',
+        '2'
+      ]);
+      expect(testBook.description).toBe("It's starship troopers");
     });
   });
 });
