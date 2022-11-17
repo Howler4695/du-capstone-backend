@@ -1,4 +1,3 @@
-// Will Implement context on apolloserver, change ../data/schema.js => ./data/schema.js
 import { books, authors, categories } from '../data/schema.js';
 import newTestServer from './utils/test-server.js';
 import randomIdsGenerator from './utils/random-ids-generator.js';
