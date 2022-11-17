@@ -1,5 +1,4 @@
 import { books, authors, categories } from '../data/schema.js';
-import { idIncrement } from '../utils/tools.js';
 
 export const typeDefs = `#graphql
   type Book {
@@ -79,7 +78,7 @@ export const resolvers = {
   },
   Mutation: {
     addBook(_, { newBook }) {
-      newBook.id = idIncrement(books.map(book => book.id));
+      newBook.id = String(books.length + 1);
       books.push(newBook);
       return newBook;
     }
