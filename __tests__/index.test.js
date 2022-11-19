@@ -3,6 +3,8 @@ import newTestServer from './utils/test-server.js';
 
 describe('index', () => {
   const testServer = newTestServer();
+  const originalBooks = [...books];
+
   describe('getBooks', () => {
     const query = `
       query {
@@ -212,7 +214,6 @@ describe('index', () => {
   });
 
   describe('updateBook', () => {
-    const originalBooks = [...books];
     const mutation = `
     mutation UpdateBook($bookId: ID!, $updatedBook: BookInput!) {
       updateBook(bookId: $bookId, updatedBook: $updatedBook) {
@@ -231,7 +232,7 @@ describe('index', () => {
   `;
 
     afterEach(() => {
-      books = [...originalBooks];
+      books[1] = originalBooks[1];
     });
 
     it('should update book', async () => {
@@ -249,13 +250,11 @@ describe('index', () => {
         variables: { bookId, updatedBook }
       });
       const { data, errors } = response.singleResult;
-      console.log(JSON.stringify(response));
 
       expect(data).toBeDefined();
       expect(errors).toBeUndefined();
 
       const testBook = data.updateBook;
-      console.log(testBook);
 
       expect(testBook.id).toBe('2');
       expect(testBook.title).toBe('Starship Troopers');

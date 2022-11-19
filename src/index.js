@@ -81,17 +81,17 @@ export const resolvers = {
       books.filter(book => authorId === book.author)
   },
   Mutation: {
-    addBook: (_, { newBook }) => {
+    addBook(_, { newBook }) {
       newBook.id = String(books.length + 1);
       books.push(newBook);
       return newBook;
     },
-    addCategory: (_, { newCategory }) => {
+    addCategory(_, { newCategory }) {
       newCategory.id = String(categories.length + 1);
       categories.push(newCategory);
       return newCategory;
     },
-    updateBook: (_, { bookId, updatedBook }) => {
+    updateBook(_, { bookId, updatedBook }) {
       updatedBook.id = bookId;
       books[Number(bookId)] = updatedBook;
       return books[Number(bookId)];
