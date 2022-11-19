@@ -118,6 +118,37 @@ describe('index', () => {
       });
     });
 
+    describe('getAuthorBooksById', () => {
+      const query = `
+      query GetAuthorBooksById($authorId: ID!) {
+        getAuthorBooksById(authorId: $authorId) {
+          title
+        }
+      }
+    `;
+
+      it('should return books with corresponding author ids', async () => {
+        const authorId = '1';
+
+        const { body: response } = await testServer.executeOperation({
+          query,
+          variables: { authorId }
+        });
+        const { data, errors } = response.singleResult;
+
+        expect(data.getAuthorBooksById).toBeDefined();
+        expect(errors).toBeUndefined();
+
+        const { getAuthorBooksById: testBookTitles } = data;
+
+        expect(testBookTitles.map(book => book.title)).toEqual([
+          'Harry Potter and the Chamber of Secrets',
+          'Harry Potter and the Prisoner of Azkaban',
+          'Harry Potter and the Goblet of Fire'
+        ]);
+      });
+    });
+
     describe('addBook', () => {
       const mutation = `
       mutation AddBook($newBook: BookInput!) {
