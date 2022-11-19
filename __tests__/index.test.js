@@ -1,4 +1,4 @@
-import { books } from '../data/schema.js';
+import { books, categories } from '../data/schema.js';
 import newTestServer from './utils/test-server.js';
 
 describe('index', () => {
@@ -139,7 +139,6 @@ describe('index', () => {
       });
 
       it('should add book to memory and return book', async () => {
-        const preAddLength = books.length;
         const newBook = {
           title: 'Starship Troopers',
           author: '2',
@@ -156,7 +155,6 @@ describe('index', () => {
 
         expect(data.addBook).toBeDefined();
         expect(errors).toBeUndefined();
-        expect(books.length).toBe(preAddLength + 1);
 
         const testBook = data.addBook;
 
@@ -170,6 +168,104 @@ describe('index', () => {
         ]);
         expect(testBook.description).toBe("It's starship troopers");
       });
+    });
+  });
+
+  describe('addCategory', () => {
+    const mutation = `
+    mutation AddCategory($newCategory: CategoryInput!) {
+      addCategory(newCategory: $newCategory) {
+        id
+        name
+        books {
+          id
+        }
+      }
+    }
+  `;
+
+    afterEach(() => {
+      categories.pop();
+    });
+
+    it('should add category to memory and return category', async () => {
+      const newCategory = {
+        name: 'Religous',
+        books: ['2', '3']
+      };
+
+      const { body: response } = await testServer.executeOperation({
+        query: mutation,
+        variables: { newCategory }
+      });
+      const { data, errors } = response.singleResult;
+
+      expect(data.addCategory).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const testCategory = data.addCategory;
+
+      expect(testCategory.id).toBe('4');
+      expect(testCategory.name).toBe('Religous');
+      expect(testCategory.books.map(book => book.id)).toEqual(['2', '3']);
+    });
+  });
+
+  describe('updateBook', () => {
+    const originalBooks = [...books];
+    const mutation = `
+    mutation UpdateBook($bookId: ID!, $updatedBook: BookInput!) {
+      updateBook(bookId: $bookId, updatedBook: $updatedBook) {
+        id
+        title
+        author {
+          id
+        }
+        coverImage
+        categories {
+          id
+        }
+        description
+      }
+    }
+  `;
+
+    afterEach(() => {
+      books = [...originalBooks];
+    });
+
+    it('should update book', async () => {
+      const bookId = '2';
+      const updatedBook = {
+        title: 'Starship Troopers',
+        author: '2',
+        coverImage: 'https://incredible-cover-image.jpeg',
+        categories: ['1', '2'],
+        description: "It's starship troopers"
+      };
+
+      const { body: response } = await testServer.executeOperation({
+        query: mutation,
+        variables: { bookId, updatedBook }
+      });
+      const { data, errors } = response.singleResult;
+      console.log(JSON.stringify(response));
+
+      expect(data).toBeDefined();
+      expect(errors).toBeUndefined();
+
+      const testBook = data.updateBook;
+      console.log(testBook);
+
+      expect(testBook.id).toBe('2');
+      expect(testBook.title).toBe('Starship Troopers');
+      expect(testBook.author.id).toBe('2');
+      expect(testBook.coverImage).toBe('https://incredible-cover-image.jpeg');
+      expect(testBook.categories.map(category => category.id)).toEqual([
+        '1',
+        '2'
+      ]);
+      expect(testBook.description).toBe("It's starship troopers");
     });
   });
 });

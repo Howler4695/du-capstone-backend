@@ -38,6 +38,7 @@ export const typeDefs = `#graphql
 
   input CategoryInput {
     name: String!
+    books: [ID]
   }
 
   type Query {
@@ -50,6 +51,8 @@ export const typeDefs = `#graphql
 
   type Mutation {
     addBook(newBook: BookInput): Book
+    addCategory(newCategory: CategoryInput): Category
+    updateBook(bookId: ID!, updatedBook: BookInput!): Book
   }
 `;
 
@@ -78,10 +81,20 @@ export const resolvers = {
       books.filter(book => authorId === book.author)
   },
   Mutation: {
-    addBook(_, { newBook }) {
+    addBook: (_, { newBook }) => {
       newBook.id = String(books.length + 1);
       books.push(newBook);
       return newBook;
+    },
+    addCategory: (_, { newCategory }) => {
+      newCategory.id = String(categories.length + 1);
+      categories.push(newCategory);
+      return newCategory;
+    },
+    updateBook: (_, { bookId, updatedBook }) => {
+      updatedBook.id = bookId;
+      books[Number(bookId)] = updatedBook;
+      return books[Number(bookId)];
     }
   }
 };
