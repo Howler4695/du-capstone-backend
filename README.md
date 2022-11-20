@@ -2,7 +2,7 @@
 
 #### Author: A1C Howle
 
-#### Completion: 6/9 (66.6%)
+#### Completion: 9/9 (100%)
 
 ## API Documentation
 
