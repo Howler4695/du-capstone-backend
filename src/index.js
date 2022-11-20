@@ -81,7 +81,7 @@ export const resolvers = {
     getAuthorBooksById: (_, { authorId }) =>
       books.filter(book => authorId === book.author),
     getCategoryBooksById: (_, { categoryId }) =>
-      books.filter(book => categoryId === book.category)
+      books.filter(book => book.categories.includes(categoryId))
   },
   Mutation: {
     addBook(_, { newBook }) {
