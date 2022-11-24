@@ -7,8 +7,8 @@ import cors from 'cors';
 import pkg from 'body-parser';
 import { typeDefs, resolvers } from './index.js';
 
-const app = express();
 const { json } = pkg;
+const app = express();
 const httpServer = http.createServer(app);
 const server = new ApolloServer({
   typeDefs,
