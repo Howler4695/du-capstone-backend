@@ -96,8 +96,8 @@ export const resolvers = {
     },
     updateBook(_, { bookId, updatedBook }) {
       updatedBook.id = bookId;
-      books[Number(bookId)] = updatedBook;
-      return books[Number(bookId)];
+      books[Number(bookId) - 1] = updatedBook;
+      return books[Number(bookId) - 1];
     }
   }
 };

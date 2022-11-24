@@ -327,6 +327,7 @@ describe('index', () => {
         '2'
       ]);
       expect(testBook.description).toBe("It's starship troopers");
+      expect(books[1].title).toBe('Starship Troopers');
     });
   });
 });
