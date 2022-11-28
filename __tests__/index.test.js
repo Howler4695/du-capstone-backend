@@ -1,4 +1,4 @@
-import { books } from '../data/schema.js';
+import { books, authors, categories } from '../data/schema.js';
 import newTestServer from './utils/test-server.js';
 
 describe('index', () => {
@@ -23,7 +23,28 @@ describe('index', () => {
 
     it('should return all books', async () => {
       const { body } = await testServer.executeOperation({ query });
-      expect(body).toMatchSnapshot();
+      expect(body.singleResult).toBeDefined();
+
+      const { data, errors } = body.singleResult;
+      expect(data).toBeDefined();
+      expect(errors).toBeUndefined();
+      expect(data.getBooks).toBeDefined();
+
+      for (const [i, book] of data.getBooks.entries()) {
+        expect(book.id).toBe(books[i].id);
+        expect(book.title).toBe(books[i].title);
+        expect(book.coverImage).toBe(books[i].coverImage);
+        if (book.description) {
+          expect(book.description).toBe(books[i].description);
+        } else {
+          expect(book.description).toBeNull();
+        }
+
+        expect(book.author.id).toBe(books[i].author);
+        expect(book.categories.map(category => category.id)).toEqual(
+          books[i].categories
+        );
+      }
     });
   });
 
@@ -43,7 +64,19 @@ describe('index', () => {
 
     it('should return all authors', async () => {
       const { body } = await testServer.executeOperation({ query });
-      expect(body).toMatchSnapshot();
+      expect(body.singleResult).toBeDefined();
+
+      const { data, errors } = body.singleResult;
+      expect(data).toBeDefined();
+      expect(errors).toBeUndefined();
+      expect(data.getAuthors).toBeDefined();
+
+      for (const [i, author] of data.getAuthors.entries()) {
+        expect(author.id).toBe(authors[i].id);
+        expect(author.firstName).toBe(authors[i].firstName);
+        expect(author.lastName).toBe(authors[i].lastName);
+        expect(author.books.map(book => book.id)).toEqual(authors[i].books);
+      }
     });
   });
 
@@ -62,7 +95,20 @@ describe('index', () => {
 
     it('should return all categories', async () => {
       const { body } = await testServer.executeOperation({ query });
-      expect(body).toMatchSnapshot();
+      expect(body.singleResult).toBeDefined();
+
+      const { data, errors } = body.singleResult;
+      expect(data).toBeDefined();
+      expect(errors).toBeUndefined();
+      expect(data.getCategories).toBeDefined();
+
+      for (const [i, category] of data.getCategories.entries()) {
+        expect(category.id).toBe(categories[i].id);
+        expect(category.name).toBe(categories[i].name);
+        expect(category.books.map(book => book.id)).toEqual(
+          categories[i].books
+        );
+      }
     });
 
     describe('getBooksByIds', () => {
